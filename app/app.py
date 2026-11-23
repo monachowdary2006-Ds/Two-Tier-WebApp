@@ -24,7 +24,7 @@ def home():
     connection.close()
 
     html = """
-    <h1>Two-Tier Web Application</h1>
+    <h1>Two-Tier Web Application ci-cd</h1>
     <h2>Messages from MySQL Database</h2>
 
     {% for message in messages %}
