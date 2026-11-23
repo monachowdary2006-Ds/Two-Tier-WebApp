@@ -2,7 +2,6 @@ services:
 
   mysql-db:
     image: mysql:8.0
-    container_name: mysql-db
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root123
@@ -20,7 +19,6 @@ services:
 
   flask-app:
     build: ./app
-    container_name: flask-app
     restart: always
     ports:
       - "5000:5000"
@@ -35,7 +33,6 @@ services:
 
   jenkins:
     build: ./jenkins
-    container_name: jenkins
     restart: unless-stopped
     privileged: true
     user: root
