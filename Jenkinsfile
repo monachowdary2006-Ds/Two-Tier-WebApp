@@ -20,14 +20,14 @@ pipeline {
         stage('Validate Docker Compose') {
             steps {
                 echo 'Validating Docker Compose configuration...'
-                sh 'docker compose config'
+                sh 'docker compose -p two-tier-webapp config'
             }
         }
 
         stage('Deploy Application') {
             steps {
-                echo 'Starting Flask and MySQL containers...'
-                sh 'docker compose up -d'
+                echo 'Deploying Flask application...'
+                sh 'docker compose -p two-tier-webapp up -d --build --no-deps flask-app'
             }
         }
     }
