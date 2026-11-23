@@ -1,20 +1,6 @@
 services:
 
-  web:
-    build: ./app
-    container_name: flask-app
-    ports:
-      - "5000:5000"
-    environment:
-      DB_HOST: db
-      DB_USER: root
-      DB_PASSWORD: root123
-      DB_NAME: twotierdb
-    depends_on:
-      db:
-        condition: service_healthy
-
-  db:
+  mysql-db:
     image: mysql:8.0
     container_name: mysql-db
     restart: always
@@ -27,10 +13,39 @@ services:
       - mysql_data:/var/lib/mysql
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot123"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+
+  flask-app:
+    build: ./app
+    container_name: flask-app
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      MYSQL_HOST: mysql-db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root123
+      MYSQL_DATABASE: twotierdb
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+
+  jenkins:
+    build: ./jenkins
+    container_name: jenkins
+    restart: unless-stopped
+    privileged: true
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   mysql_data:
+  jenkins_home:
